@@ -1,0 +1,15 @@
+- name: Register with Loop Example
+  hosts: localhost
+  tasks:
+    - name: Get the hostname for each host
+      command: hostname
+      register: hostnames
+      delegate_to: "{{ item }}“
+      with_items:
+        - localhost
+        - remote_host_1
+        - remote_host_2
+    - name: Show the hostnames
+      debug:
+        msg: "Hostname: {{ item.stdout }}"
+      with_items: "{{ hostnames.results }}"

@@ -1,0 +1,12 @@
+- name: Dynamically set facts
+  hosts: localhost
+  tasks:
+    - name: Set initial fact
+      set_fact:
+        dynamic_fact: "initial value"
+    - name: Change fact value based on condition
+      set_fact:
+        dynamic_fact: "{{ 'new value' if dynamic_fact == 'initial value' else dynamic_fact }}"
+    - name: Display the dynamic fact
+      debug:
+        msg: "The dynamic_fact value is: {{ dynamic_fact }}"

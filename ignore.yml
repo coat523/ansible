@@ -1,0 +1,16 @@
+- name: Example playbook with ignore_errors
+  hosts: web
+  become: yes
+  tasks:
+    - name: Install a package (may fail)
+      package:
+        name: non-existent-package
+        state: present
+      ignore_errors: yes
+    - name: Install a valid package
+      package:
+        name: vim
+        state: present
+    - name: Print a message after ignoring error
+      debug:
+        msg: "Even if the previous task failed, this task will still run."
