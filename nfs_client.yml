@@ -1,0 +1,37 @@
+- name: Mount NFS share on Ubuntu
+  hosts: db  # 대상 호스트를 지정하세요
+  become: yes  # 관리자 권한으로 실행
+  tasks:
+    # 1. nfs-common 패키지 설치 (NFS 클라이언트를 위한 필수 패키지)
+    - name: Install nfs-common package
+      apt:
+        name: nfs-common  # NFS 클라이언트 기능을 위한 패키지
+        state: present
+        update_cache: yes  # 패키지 목록 갱신
+
+    # 2. 마운트 포인트 디렉토리 생성 (디렉토리가 없으면 생성)
+    - name: Create mount point directory
+      file:
+        path: /dir1  # 마운트할 디렉토리 경로
+        state: directory  # 디렉토리 생성
+        mode: '0755'  # 디렉토리 권한 설정 (읽기/쓰기/실행 권한 부여)
+
+    # 3. NFS 공유 마운트 (NFS 서버와 공유 디렉토리 경로 지정)
+    - name: Mount NFS share
+      mount:
+        path: /dir1  # 마운트할 디렉토리
+        src: "192.168.20.1:/sales"  # NFS 서버 IP와 공유 디렉토리 (예: 192.168.1.100:/export/data)
+        fstype: nfs  # 파일 시스템 유형
+        opts: rw,sync  # 마운트 옵션 (읽기/쓰기, 동기화)
+        state: mounted  # 마운트 상태를 mounted로 설정
+
+    # 4. 시스템 재부팅 후에도 NFS 공유가 지속되도록 fstab에 항목 추가
+    - name: Ensure NFS mount is persistent across reboots
+      mount:
+        path: /dir1  # 마운트할 디렉토리
+        src: "192.168.20.1:/sales"  # NFS 서버 IP와 공유 디렉토리
+        fstype: nfs  # 파일 시스템 유형
+        opts: rw,sync  # 마운트 옵션
+        state: mounted  # 마운트 상태를 mounted로 설정
+        dump: 0  # fstab의 dump 옵션, 일반적으로 0으로 설정 (백업 목적)
+        passno: 0  # fstab의 passno 옵션, 부팅 시 파일 시스템 점검 순서, 0이면 점검 안 함
