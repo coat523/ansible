@@ -11,6 +11,13 @@
       apt:
         name: nginx
         state: present
+    - name: dd
+      copy:
+        content: kk
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: '0664'      
     - name: Start and enable Nginx service
       service:
         name: nginx
